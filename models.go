@@ -8,14 +8,16 @@ type Data struct {
 	Url      string
 }
 
-type IssuesQuery struct {
-	Repository struct {
-		Issues struct {
-			Nodes    []issue
-			PageInfo pageinfo
-		} `graphql:"issues(filterBy: {states: OPEN, since: $start}, first: 100, after: $cursor)"`
-	} `graphql:"repository(name:$repository, owner: $owner)"`
+type IssuesQuery struct   {
+	Search struct {
+		PageInfo pageinfo
+		Nodes []issue_fragment
+	} `graphql:"search(type:$searchType, first:100, after:$cursor, query:$searchQuery)"`
 	RateLimit ratelimit
+}
+
+type issue_fragment struct {
+	Issue issue `graphql:"...on Issue"`
 }
 
 type issue struct {

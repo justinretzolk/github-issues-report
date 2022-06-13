@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -11,7 +12,7 @@ const outputFile = "issues_report.csv"
 
 func main() {
 	// Check for required env vars
-	token, repo, org, err := checkEnvironment()
+	token, repo, err := checkEnvironment()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,12 +31,13 @@ func main() {
 	// Get a GitHub client
 	client := getClient(token)
 
+	// Get the time for the search query, one year before current time
+	now := time.Now().AddDate(-1, 0, 0).Format("2006-01-02")
+
 	// Make variables
 	variables := map[string]interface{}{
-		"owner":      githubv4.String(org),
-		"repository": githubv4.String(repo),
-		// One year before query data
-		"start":  githubv4.DateTime{time.Now().AddDate(-1, 0, 0)},
+		"searchQuery": githubv4.String(fmt.Sprintf("repo:%s, is:open, is:issue, created:>%s, sort:created-asc", repo, now)),
+		"searchType": githubv4.SearchTypeIssue,
 		"cursor": (*githubv4.String)(nil),
 	}
 

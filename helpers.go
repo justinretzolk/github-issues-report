@@ -8,14 +8,13 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 	yaml "gopkg.in/yaml.v3"
 )
 
-func checkEnvironment() (token, repo, org string, err error) {
+func checkEnvironment() (token, repo string, err error) {
 
 	home := os.Getenv("HOME")
 	configPath := filepath.Join(home, ".config/gh/hosts.yml")
@@ -33,15 +32,12 @@ func checkEnvironment() (token, repo, org string, err error) {
 
 	token = ghAuthFileData["github.com"].OAuthToken
 
-	repoFull, ok := os.LookupEnv("GITHUB_REPO")
+	var ok bool
+	repo, ok = os.LookupEnv("GITHUB_REPO")
 	if !ok {
 		err = fmt.Errorf("Required environment variable GITHUB_REPO not set")
 		return
 	}
-
-	repoParts := strings.Split(repoFull, "/")
-	org = repoParts[0]
-	repo = repoParts[1]
 
 	return
 }

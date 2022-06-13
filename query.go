@@ -34,25 +34,25 @@ func GetIssues(data [][]string, variables map[string]interface{}, client *github
 			return nil, fmt.Errorf("Query error: %v", err)
 		}
 
-		if len(query.Repository.Issues.Nodes) == 0 {
+		if len(query.Search.Nodes) == 0 {
 			log.Println("No new issues found since last run")
 			break
 		}
 
 		// Add the data from the query to the output
-		for counter, issue := range query.Repository.Issues.Nodes {
-			log.Printf("Processing found issue %v", counter+page*chunk)
+		for counter, node := range query.Search.Nodes {
+			log.Printf("Processing found issue %v: %v", counter+page*chunk, node.Issue.Number)
 			results = append(results, []string{
 				"false",
-				strconv.Itoa(issue.Number),
-				issue.Title,
-				issue.Url,
-				query.Repository.Issues.PageInfo.EndCursor,
+				strconv.Itoa(node.Issue.Number),
+				node.Issue.Title,
+				node.Issue.Url,
+				query.Search.PageInfo.EndCursor,
 			})
 		}
 
 		// If this is the last page, break
-		if !query.Repository.Issues.PageInfo.HasNextPage {
+		if !query.Search.PageInfo.HasNextPage {
 			break
 		}
 
@@ -60,7 +60,7 @@ func GetIssues(data [][]string, variables map[string]interface{}, client *github
 		limit = query.RateLimit
 
 		// Update the cursor to the end cursor of the previous query
-		variables["cursor"] = githubv4.String(query.Repository.Issues.PageInfo.EndCursor)
+		variables["cursor"] = githubv4.String(query.Search.PageInfo.EndCursor)
 
 		page++
 	}

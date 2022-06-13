@@ -28,4 +28,4 @@ The CSV that is output has the following columns:
 - `number`: The issue number.
 - `title`: The issue title.
 - `url`: The URL for the issue (for easy clicking :slightly_smiling_face:.
-- `end_cursor`: An "internal" field that helps the program determine where to pick up on next run.
+- `end_cursor`: An internal field that helps the program determine where to pick up on next run.
